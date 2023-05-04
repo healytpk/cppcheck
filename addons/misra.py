@@ -1362,6 +1362,9 @@ class MisraChecker:
         for scope in cfg.scopes:
             if scope.className is None:
                 continue
+            classNameToken = scope.bodyStart.previous
+            if scope.className != classNameToken.str:
+                continue
             if scope.type not in ('Struct', 'Enum'):
                 continue
             used = False
@@ -1371,7 +1374,7 @@ class MisraChecker:
                     used = True
                     break
                 tok = tok.next
-            summary.append({'name': scope.className, 'used':used, 'file': scope.bodyStart.file, 'line': scope.bodyStart.linenr, 'column': scope.bodyStart.column})
+            summary.append({'name': scope.className, 'used':used, 'file': classNameToken.file, 'line': classNameToken.linenr, 'column': classNameToken.column})
         if len(summary) > 0:
             cppcheckdata.reportSummary(dumpfile, 'MisraTagName', summary)
 
